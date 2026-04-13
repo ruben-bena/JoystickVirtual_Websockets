@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Main implements ApplicationListener {
 
@@ -29,6 +31,10 @@ public class Main implements ApplicationListener {
 
     // A variable for tracking elapsed time for the animation
     float stateTime;
+
+    Rectangle up, down, left, right, fire;
+    final int IDLE=0, UP=1, DOWN=2, LEFT=3, RIGHT=4;
+    ShapeRenderer shapeRenderer;
 
     @Override
     public void create() {
@@ -71,6 +77,15 @@ public class Main implements ApplicationListener {
         // time to 0
         spriteBatch = new SpriteBatch();
         stateTime = 0f;
+
+        // facilities per calcular el "touch"
+        float width = Gdx.graphics.getWidth();
+        float height = Gdx.graphics.getHeight();
+        up = new Rectangle(0, height*2/3, width, height/3);
+        down = new Rectangle(0, 0, width, height/3);
+        left = new Rectangle(0, 0, width/3, height);
+        right = new Rectangle(width*2/3, 0, width/3, height);
+        shapeRenderer = new ShapeRenderer();
     }
 
     @Override
@@ -165,8 +180,23 @@ public class Main implements ApplicationListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear screen
         stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
 
+        drawRects();
+
         spriteBatch.begin();
         spriteBatch.draw(currentFrame, x, y);
         spriteBatch.end();
+    }
+
+    private void drawRects() {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1, 0, 0, 0.1f);
+        shapeRenderer.rect(up.x, up.y, up.width, up.height);
+        shapeRenderer.setColor(0, 1, 0, 0.1f);
+        shapeRenderer.rect(down.x, down.y, down.width, down.height);
+        shapeRenderer.setColor(0, 0, 1, 0.1f);
+        shapeRenderer.rect(left.x, left.y, left.width, left.height);
+        shapeRenderer.setColor(1, 1, 0, 0.1f);
+        shapeRenderer.rect(right.x, right.y, right.width, right.height);
+        shapeRenderer.end();
     }
 }
