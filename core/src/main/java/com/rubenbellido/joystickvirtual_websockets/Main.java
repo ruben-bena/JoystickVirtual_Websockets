@@ -124,9 +124,21 @@ public class Main implements ApplicationListener {
         logic();
         draw();
 
+        sendMessage();
+    }
+
+    private void sendMessage() {
         if ( nextTimeToSendData < System.currentTimeMillis() ) {
             nextTimeToSendData = System.currentTimeMillis() + timeBetweenMessagesSentInMiliseconds;
-            socket.send("Enviar dades");
+            String payload = "{"
+                + "\"type\":\"update\","
+                + "\"position\": {"
+                + "\"x\":" + x + ","
+                + "\"y\":" + y
+                + "}"
+                + "}";
+
+            socket.send(payload);
         }
     }
 
