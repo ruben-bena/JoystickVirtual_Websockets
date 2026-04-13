@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 
 public class Main implements ApplicationListener {
 
@@ -117,6 +118,11 @@ public class Main implements ApplicationListener {
     }
 
     public void input() {
+        inputKeys();
+        virtual_joystick_control();
+    }
+
+    private void inputKeys() {
         // Gestión dirX
         if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.LEFT)) {
             if (!isFacingLeftDirection) {
@@ -143,6 +149,37 @@ public class Main implements ApplicationListener {
         }
         else {
             dirY = 0;
+        }
+    }
+
+    protected void virtual_joystick_control() {
+        // iterar per multitouch
+        // cada "i" és un possible "touch" d'un dit a la pantalla
+        for(int i=0;i<10;i++) {
+            if (Gdx.input.isTouched(i)) {
+                Vector3 touchPos = new Vector3();
+                touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+                dirX = 0;
+                dirY = 0;
+                if (up.contains(touchPos.x, touchPos.y)) {
+                    dirY = -1;
+                }
+                if (down.contains(touchPos.x, touchPos.y)) {
+                    dirY = 1;
+                }
+                if (left.contains(touchPos.x, touchPos.y)) {
+                    dirX = -1;
+                    if (!isFacingLeftDirection) {
+                        isFacingLeftDirection = true;
+                    }
+                }
+                if (right.contains(touchPos.x, touchPos.y)) {
+                    dirX = 1;
+                    if (isFacingLeftDirection) {
+                        isFacingLeftDirection = false;
+                    }
+                }
+            }
         }
     }
 
