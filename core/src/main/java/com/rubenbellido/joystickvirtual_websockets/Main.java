@@ -1,5 +1,6 @@
 package com.rubenbellido.joystickvirtual_websockets;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,6 +11,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.github.czyzby.websocket.WebSocket;
+import com.github.czyzby.websocket.WebSocketListener;
+import com.github.czyzby.websocket.WebSockets;
 
 public class Main implements ApplicationListener {
 
@@ -33,9 +37,17 @@ public class Main implements ApplicationListener {
     // A variable for tracking elapsed time for the animation
     float stateTime;
 
+    // Rectangles
     Rectangle up, down, left, right, fire;
     final int IDLE=0, UP=1, DOWN=2, LEFT=3, RIGHT=4;
     ShapeRenderer shapeRenderer;
+
+    // Websockets
+    WebSocket socket;
+    String address = "localhost";
+    int port = 8888;
+    long nextTimeToSendData = 0;
+    long timeBetweenMessagesSentInMiliseconds = 1000;
 
     @Override
     public void create() {
@@ -87,6 +99,18 @@ public class Main implements ApplicationListener {
         left = new Rectangle(0, 0, width/4, height);
         right = new Rectangle(width*3/4, 0, width/4, height);
         shapeRenderer = new ShapeRenderer();
+
+        // Websockets
+        if( Gdx.app.getType()== Application.ApplicationType.Android )
+            // en Android el host és accessible per 10.0.2.2
+            address = "10.0.2.2";
+        socket = WebSockets.newSocket(WebSockets.toWebSocketUrl(address, port));
+        // ULL: si és a traves de HTTPS , el protocol seria wss enlloc de ws
+        //socket = WebSockets.newSocket(WebSockets.toSecureWebSocketUrl(address, port));
+        socket.setSendGracefully(false);
+        socket.addListener((WebSocketListener) new MyWSListener());
+        socket.connect();
+        socket.send("Enviar dades");
     }
 
     @Override
@@ -99,6 +123,11 @@ public class Main implements ApplicationListener {
         input();
         logic();
         draw();
+
+        if ( nextTimeToSendData < System.currentTimeMillis() ) {
+            nextTimeToSendData = System.currentTimeMillis() + timeBetweenMessagesSentInMiliseconds;
+            socket.send("Enviar dades");
+        }
     }
 
     @Override
@@ -238,5 +267,38 @@ public class Main implements ApplicationListener {
         shapeRenderer.setColor(1, 1, 1, 0.3f);
         shapeRenderer.rect(right.x, right.y, right.width, right.height);
         shapeRenderer.end();
+    }
+
+    class MyWSListener implements WebSocketListener {
+
+        @Override
+        public boolean onOpen(WebSocket webSocket) {
+            System.out.println("Opening...");
+            return false;
+        }
+
+        @Override
+        public boolean onClose(WebSocket webSocket, int closeCode, String reason) {
+            System.out.println("Closing...");
+            return false;
+        }
+
+        @Override
+        public boolean onMessage(WebSocket webSocket, String packet) {
+            System.out.println("Message:"+packet);
+            return false;
+        }
+
+        @Override
+        public boolean onMessage(WebSocket webSocket, byte[] packet) {
+            System.out.println("Message:"+packet);
+            return false;
+        }
+
+        @Override
+        public boolean onError(WebSocket webSocket, Throwable error) {
+            System.out.println("ERROR:"+error.toString());
+            return false;
+        }
     }
 }
