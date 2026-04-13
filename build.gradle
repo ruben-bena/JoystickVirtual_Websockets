@@ -23,6 +23,12 @@ allprojects {
       testOutputDir = file('build/classes/java/test')
     }
   }
+  ext {
+    wsVersion = '1.9.10.3'
+  }
+  repositories {
+    maven { url "https://jitpack.io" }
+  }
 }
 
 configure(subprojects - project(':android')) {
