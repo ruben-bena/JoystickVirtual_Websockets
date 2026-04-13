@@ -1,3 +1,7 @@
+# Cómo levantar el proyecto
+1. Dentro de `server`, hacer ```node index.js```.
+2. Levantar el proyecto en Android Studio con una configuración Desktop.
+
 # JoystickVirtual_Websockets
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
