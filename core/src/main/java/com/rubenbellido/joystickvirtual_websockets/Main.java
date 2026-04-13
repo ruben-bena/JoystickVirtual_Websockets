@@ -82,10 +82,10 @@ public class Main implements ApplicationListener {
         // facilities per calcular el "touch"
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-        up = new Rectangle(0, height*2/3, width, height/3);
-        down = new Rectangle(0, 0, width, height/3);
-        left = new Rectangle(0, 0, width/3, height);
-        right = new Rectangle(width*2/3, 0, width/3, height);
+        up = new Rectangle(0, height*3/4, width, height/4);
+        down = new Rectangle(0, 0, width, height/4);
+        left = new Rectangle(0, 0, width/4, height);
+        right = new Rectangle(width*3/4, 0, width/4, height);
         shapeRenderer = new ShapeRenderer();
     }
 
@@ -225,14 +225,17 @@ public class Main implements ApplicationListener {
     }
 
     private void drawRects() {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1, 0, 0, 0.1f);
+        shapeRenderer.setColor(1, 1, 1, 0.3f);
         shapeRenderer.rect(up.x, up.y, up.width, up.height);
-        shapeRenderer.setColor(0, 1, 0, 0.1f);
+        shapeRenderer.setColor(1, 1, 1, 0.3f);
         shapeRenderer.rect(down.x, down.y, down.width, down.height);
-        shapeRenderer.setColor(0, 0, 1, 0.1f);
+        shapeRenderer.setColor(1, 1, 1, 0.3f);
         shapeRenderer.rect(left.x, left.y, left.width, left.height);
-        shapeRenderer.setColor(1, 1, 0, 0.1f);
+        shapeRenderer.setColor(1, 1, 1, 0.3f);
         shapeRenderer.rect(right.x, right.y, right.width, right.height);
         shapeRenderer.end();
     }
